@@ -151,13 +151,13 @@ export function HorseShoe({ size = 28, color = '#D4A017', ...p }: { size?: numbe
   return (
     <svg viewBox="0 0 32 32" width={size} height={size} {...p}>
       <path
-        d="M8 6 Q4 12 4 18 Q4 26 10 28 L12 24 Q8 22 8 18 Q8 14 10 10 M24 6 Q28 12 28 18 Q28 26 22 28 L20 24 Q24 22 24 18 Q24 14 22 10"
-        fill={color}
-        stroke="#8B3A1F"
-        strokeWidth="1"
+        d="M7 30 L7 15 Q7 3 16 3 Q25 3 25 15 L25 30"
+        fill="none"
+        stroke={color}
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      <circle cx="7" cy="9" r="1.2" fill="#8B3A1F" />
-      <circle cx="25" cy="9" r="1.2" fill="#8B3A1F" />
     </svg>
   );
 }

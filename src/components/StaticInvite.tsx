@@ -3,7 +3,7 @@ export function StaticInvite() {
     <div
       id="static-invite"
       style={{
-        position: 'absolute',
+        position: 'fixed',
         left: -99999,
         top: 0,
         width: 1080,
