@@ -262,6 +262,37 @@ a:focus-visible {
   0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.45; }
   50% { transform: scale(1.06) rotate(8deg); opacity: 0.7; }
 }
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes crown-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.12); }
+}
+
+@keyframes glow-aura {
+  0%, 100% {
+    box-shadow:
+      0 10px 30px rgba(0,0,0,0.55),
+      inset 0 2px 0 rgba(255,255,255,0.35),
+      inset 0 -4px 0 rgba(0,0,0,0.18),
+      0 0 18px 4px rgba(212,160,23,0.25);
+  }
+  50% {
+    box-shadow:
+      0 10px 30px rgba(0,0,0,0.55),
+      inset 0 2px 0 rgba(255,255,255,0.35),
+      inset 0 -4px 0 rgba(0,0,0,0.18),
+      0 0 60px 22px rgba(212,160,23,0.55);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.1; transform: scale(0.5) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.4) rotate(25deg); }
+}
 .rays-layer {
   position: absolute;
   inset: -40%;
