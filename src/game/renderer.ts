@@ -8,7 +8,6 @@ export const PIPE_CAP_HEIGHT = 30;
 export const PIPE_CAP_OVERHANG = 8;
 export const PIPE_SPAWN_INTERVAL = 85;
 export const SCROLL_SPEED = 2.3;
-export const WIN_SCORE = 3;
 export const FLOOR_HEIGHT = 10;
 
 const PIPE_GREEN = '#73BF2E';
