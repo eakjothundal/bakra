@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { UseSound } from '../hooks/useSound';
 import {
   CornerBracket,
@@ -9,45 +8,14 @@ import {
   SparkleStar,
   StarBadge,
 } from '../components/Ornaments';
-import { saveElementAsImage } from '../lib/saveImage';
-import { SaveImageModal } from '../components/SaveImageModal';
 
 interface Props {
   onStart: () => void;
+  onViewLeaderboard: () => void;
   sound: UseSound;
 }
 
-export function InviteScreen({ onStart, sound }: Props) {
-  const [savingInvite, setSavingInvite] = useState(false);
-  const [longPressUrl, setLongPressUrl] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
-
-  const flashToast = (msg: string) => {
-    setToast(msg);
-    window.setTimeout(() => setToast(null), 2000);
-  };
-
-  const handleSaveInvite = async () => {
-    if (savingInvite) return;
-    sound.play('tap');
-    setSavingInvite(true);
-    try {
-      const outcome = await saveElementAsImage('static-invite', 'bakra-party-invite.png', {
-        background: '#1a1410',
-        scale: 2,
-        shareTitle: 'Bakra Party 2026',
-        shareText: 'Bakra Party 2026 — Tue May 19 · 6 PM · Lincoln CA',
-        onLongPressFallback: (url) => setLongPressUrl(url),
-      });
-      if (outcome === 'downloaded') flashToast('invite saved');
-      else if (outcome === 'shared') flashToast('shared!');
-    } catch {
-      flashToast('save failed');
-    } finally {
-      setSavingInvite(false);
-    }
-  };
-
+export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
   const handleCTA = () => {
     void sound.unlock();
     sound.play('tap');
@@ -212,10 +180,7 @@ export function InviteScreen({ onStart, sound }: Props) {
 
         {/* Details card — ticket-stub style */}
         <div className="mt-3 space-y-0">
-          <DetailRow
-            label="WHEN"
-            value="Tue · May 19, 2026 · 6 PM"
-          />
+          <DetailRow label="WHEN" value="Tue · May 19, 2026 · 6 PM ONWARDS" />
           <DashedDivider />
           <DetailRow
             label="WHERE"
@@ -243,17 +208,19 @@ export function InviteScreen({ onStart, sound }: Props) {
           </button>
           <button
             type="button"
-            onClick={handleSaveInvite}
-            disabled={savingInvite}
-            className="mt-3 w-full min-h-[44px] rounded-xl border border-brass/40 text-brass text-[11px] uppercase tracking-[0.28em] font-bold active:bg-brass/10 disabled:opacity-60"
+            onClick={() => {
+              sound.play('tap');
+              onViewLeaderboard();
+            }}
+            className="mt-3 w-full text-[12px] text-parchment/75 underline underline-offset-4 min-h-[44px] px-4 rounded-lg active:bg-parchment/5"
           >
-            {savingInvite ? 'preparing…' : '↓ Save Invite'}
+            View Leaderboard →
           </button>
         </div>
 
         {/* Footer hint */}
         <div className="mt-4 text-center text-[10px] text-parchment/65 tracking-[0.18em] uppercase">
-          pass 3 pipes to unlock your card
+          flap your way onto the leaderboard
         </div>
       </div>
 
@@ -265,27 +232,6 @@ export function InviteScreen({ onStart, sound }: Props) {
         </span>
         <HorseShoe size={18} style={{ transform: 'scaleX(-1)' }} />
       </div>
-
-      {toast && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-3 rounded-xl bg-parchment/10 text-parchment border border-brass/30 text-[12px] font-medium shadow-lg z-40"
-        >
-          {toast}
-        </div>
-      )}
-
-      {longPressUrl && (
-        <SaveImageModal
-          src={longPressUrl}
-          filename="bakra-party-invite.png"
-          onClose={() => {
-            URL.revokeObjectURL(longPressUrl);
-            setLongPressUrl(null);
-          }}
-        />
-      )}
     </div>
   );
 }

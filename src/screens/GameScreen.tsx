@@ -6,11 +6,11 @@ import type { UseSound } from '../hooks/useSound';
 interface Props {
   character: Character;
   onBack: () => void;
-  onWin: () => void;
+  onGameEnd: (score: number) => void;
   sound: UseSound;
 }
 
-export function GameScreen({ character, onBack, onWin, sound }: Props) {
+export function GameScreen({ character, onBack, onGameEnd, sound }: Props) {
   const [score, setScore] = useState(0);
 
   return (
@@ -28,9 +28,6 @@ export function GameScreen({ character, onBack, onWin, sound }: Props) {
           <div className="font-mono font-black text-[32px] text-brass leading-none tabular">
             {score}
           </div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-parchment/75 mt-1 font-medium">
-            target: 3
-          </div>
         </div>
         <div className="w-[48px]" aria-hidden />
       </div>
@@ -40,7 +37,7 @@ export function GameScreen({ character, onBack, onWin, sound }: Props) {
           character={character}
           sound={sound}
           onScore={setScore}
-          onWin={onWin}
+          onGameEnd={onGameEnd}
         />
       </div>
     </div>

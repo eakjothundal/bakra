@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { DividerFancy, RaysBurst, StarBadge } from '../components/Ornaments';
 
-const EMOJIS = ['🐐', '⭐', '✨', '🎉', '💜', '🔥'];
+const EMOJIS = ['🐐', '⭐', '✨', '🎉', '🏆', '🔥'];
 
 function makeConfetti(n: number) {
   return Array.from({ length: n }, (_, i) => ({
@@ -13,8 +13,13 @@ function makeConfetti(n: number) {
   }));
 }
 
-export function WonScreen({ onContinue }: { onContinue: () => void }) {
-  const pieces = useMemo(() => makeConfetti(44), []);
+interface Props {
+  score: number;
+  onContinue: () => void;
+}
+
+export function FirstPlaceScreen({ score, onContinue }: Props) {
+  const pieces = useMemo(() => makeConfetti(60), []);
 
   return (
     <div className="relative min-h-dvh w-full max-w-app mx-auto px-6 pt-10 pb-10 flex flex-col items-center justify-center overflow-hidden text-center">
@@ -35,18 +40,17 @@ export function WonScreen({ onContinue }: { onContinue: () => void }) {
         </span>
       ))}
 
-      {/* Medal with rays */}
-      <div className="relative w-[260px] h-[260px] flex items-center justify-center">
+      <div className="relative w-[280px] h-[280px] flex items-center justify-center">
         <div className="absolute inset-0 overflow-hidden rounded-full">
           <RaysBurst
-            className="absolute inset-[-15%] motion-safe:animate-[rays-pulse_6s_ease-in-out_infinite]"
+            className="absolute inset-[-20%] motion-safe:animate-[rays-pulse_5s_ease-in-out_infinite]"
             color="#D4A017"
-            count={24}
-            style={{ opacity: 0.6 }}
+            count={32}
+            style={{ opacity: 0.75 }}
           />
         </div>
         <div
-          className="relative w-[170px] h-[170px] rounded-full flex items-center justify-center motion-safe:animate-pop-in"
+          className="relative w-[190px] h-[190px] rounded-full flex items-center justify-center motion-safe:animate-pop-in"
           style={{
             background:
               'radial-gradient(circle at 40% 30%, #f1c238 0%, #D4A017 60%, #8b6a0f 100%)',
@@ -59,42 +63,37 @@ export function WonScreen({ onContinue }: { onContinue: () => void }) {
             className="absolute inset-3 rounded-full border-2 border-dashed"
             style={{ borderColor: 'rgba(139,58,31,0.5)' }}
           />
-          <span className="text-[100px] leading-none relative z-10" aria-hidden>
-            🐐
+          <span className="text-[110px] leading-none relative z-10" aria-hidden>
+            🏆
           </span>
-          <StarBadge size={40} className="absolute -top-3 -left-3 drop-shadow-lg" />
-          <StarBadge size={34} className="absolute -bottom-2 -right-3 drop-shadow-lg" />
+          <StarBadge size={44} className="absolute -top-3 -left-3 drop-shadow-lg" />
+          <StarBadge size={38} className="absolute -bottom-2 -right-3 drop-shadow-lg" />
         </div>
       </div>
 
       <div className="mt-4 text-[10px] tracking-[0.45em] text-brass font-black uppercase">
-        ★ Verified Goat ★
+        ★ Top of the Herd ★
       </div>
 
       <h2
         className="mt-3 display-headline"
-        style={{ fontSize: 'clamp(44px, 12vw, 54px)' }}
+        style={{ fontSize: 'clamp(40px, 11vw, 52px)' }}
       >
-        YOU
+        NEW #1
         <br />
-        SURVIVED
+        GOAT
       </h2>
 
-      <div className="mt-5 w-full max-w-[320px]">
-        <DividerFancy label="THE GOATS HAVE SPOKEN" />
+      <div className="mt-4 font-mono font-black text-[32px] text-brass tabular">
+        {score}
       </div>
 
-      <p className="mt-5 max-w-[280px] text-center text-[14px] text-parchment/80 leading-[1.6]">
-        your official <span className="text-brass font-bold">rookie card</span> is
-        ready. trade wisely.
-      </p>
+      <div className="mt-5 w-full max-w-[320px]">
+        <DividerFancy label="THE LEGEND GROWS" />
+      </div>
 
-      <button
-        type="button"
-        onClick={onContinue}
-        className="btn-western mt-9 max-w-[320px]"
-      >
-        Claim My Card
+      <button type="button" onClick={onContinue} className="btn-western mt-9 max-w-[320px]">
+        Continue
       </button>
     </div>
   );
