@@ -45,10 +45,12 @@ Netlify dashboard → Site configuration → Environment variables → Add:
 
 | Key | Value |
 |---|---|
-| `AWS_ACCESS_KEY_ID` | from step 2 |
-| `AWS_SECRET_ACCESS_KEY` | from step 2 |
-| `AWS_REGION` | e.g. `us-east-1` — must match the table's region |
-| `DDB_TABLE_NAME` | `bakra-party-scores` |
+| `BAKRA_AWS_KEY_ID` | from step 2 |
+| `BAKRA_AWS_SECRET` | from step 2 |
+| `BAKRA_AWS_REGION` | e.g. `us-east-1` — must match the table's region |
+| `BAKRA_DDB_TABLE_NAME` | `bakra-party-scores` |
+
+> `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` are reserved by Netlify, so the BAKRA_ prefix is used instead.
 
 Redeploy the site after adding the vars.
 
