@@ -1,16 +1,13 @@
 import { useState } from 'react';
 import type { Character } from '../types';
 import { FlappyBakra } from '../game/FlappyBakra';
-import type { UseSound } from '../hooks/useSound';
-
 interface Props {
   character: Character;
   onBack: () => void;
   onGameEnd: (score: number) => void;
-  sound: UseSound;
 }
 
-export function GameScreen({ character, onBack, onGameEnd, sound }: Props) {
+export function GameScreen({ character, onBack, onGameEnd }: Props) {
   const [score, setScore] = useState(0);
 
   return (
@@ -35,7 +32,6 @@ export function GameScreen({ character, onBack, onGameEnd, sound }: Props) {
       <div className="flex-1 flex items-center justify-center mt-4">
         <FlappyBakra
           character={character}
-          sound={sound}
           onScore={setScore}
           onGameEnd={onGameEnd}
         />

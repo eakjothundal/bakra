@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { Character } from '../types';
 import { CHARACTERS } from './characters';
-import type { UseSound } from '../hooks/useSound';
 import {
   BIRD_RADIUS,
   BIRD_X,
@@ -22,7 +21,6 @@ import {
 
 interface Props {
   character: Character;
-  sound: UseSound;
   onScore: (n: number) => void;
   onGameEnd: (score: number) => void;
 }
@@ -35,7 +33,7 @@ interface Pipe {
 
 type Phase = 'waiting' | 'playing' | 'gameover';
 
-export function FlappyBakra({ character, sound, onScore, onGameEnd }: Props) {
+export function FlappyBakra({ character, onScore, onGameEnd }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
   const stateRef = useRef({
@@ -94,7 +92,6 @@ export function FlappyBakra({ character, sound, onScore, onGameEnd }: Props) {
       }
       if (s.phase === 'waiting') s.phase = 'playing';
       s.birdVY = charCfg.physics.flap;
-      sound.play('flap');
     };
 
     const handleDown = (e: Event) => {
@@ -130,7 +127,6 @@ export function FlappyBakra({ character, sound, onScore, onGameEnd }: Props) {
           if (!p.passed && p.x + PIPE_WIDTH < BIRD_X) {
             p.passed = true;
             s.score++;
-            sound.play('score');
             onScore(s.score);
           }
         }
@@ -156,7 +152,6 @@ export function FlappyBakra({ character, sound, onScore, onGameEnd }: Props) {
         }
         if (hitFloor || hitCeiling || hitPipe) {
           s.phase = 'gameover';
-          sound.play('death');
           onGameEnd(s.score);
         }
         if (hitFloor) s.birdY = H - FLOOR_HEIGHT - BIRD_RADIUS;
@@ -201,13 +196,13 @@ export function FlappyBakra({ character, sound, onScore, onGameEnd }: Props) {
       canvas.removeEventListener('mousedown', handleDown);
       canvas.removeEventListener('touchstart', handleDown);
     };
-  }, [charCfg, sound, onScore, onGameEnd]);
+  }, [charCfg, onScore, onGameEnd]);
 
   return (
     <canvas
       ref={canvasRef}
       className="block rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.5)] border border-brass/25 select-none"
-      style={{ touchAction: 'none' }}
+      style={{ width: W, height: H, touchAction: 'none' }}
       aria-label="Flappy Bakra game canvas"
     />
   );

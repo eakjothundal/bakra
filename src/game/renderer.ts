@@ -1,6 +1,6 @@
 export const W = 360;
 export const H = 640;
-export const BIRD_RADIUS = 20;
+export const BIRD_RADIUS = 36;
 export const BIRD_X = 80;
 export const PIPE_WIDTH = 60;
 export const PIPE_GAP = 200;
@@ -153,7 +153,10 @@ export function drawBird(
   ctx.rotate(rotation);
 
   if (sprite && sprite.complete && sprite.naturalWidth > 0) {
-    ctx.drawImage(sprite, -24, -24, 48, 48);
+    const targetH = 110;
+    const aspect = sprite.naturalWidth / sprite.naturalHeight;
+    const targetW = targetH * aspect;
+    ctx.drawImage(sprite, -targetW / 2, -targetH / 2, targetW, targetH);
   } else {
     // Emoji fallback — render via fillText
     ctx.font = '40px serif';

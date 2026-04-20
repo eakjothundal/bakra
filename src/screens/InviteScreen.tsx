@@ -1,9 +1,7 @@
-import type { UseSound } from '../hooks/useSound';
 import {
   CornerBracket,
   DividerFancy,
   Fleur,
-  HorseShoe,
   RaysBurst,
   SparkleStar,
   StarBadge,
@@ -12,13 +10,10 @@ import {
 interface Props {
   onStart: () => void;
   onViewLeaderboard: () => void;
-  sound: UseSound;
 }
 
-export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
+export function InviteScreen({ onStart, onViewLeaderboard }: Props) {
   const handleCTA = () => {
-    void sound.unlock();
-    sound.play('tap');
     onStart();
   };
 
@@ -54,11 +49,9 @@ export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
 
         {/* Top banner */}
         <div className="flex items-center justify-center gap-3 text-brass">
-          <HorseShoe size={22} />
           <div className="text-[10px] tracking-[0.42em] uppercase font-bold">
             Summons to the
           </div>
-          <HorseShoe size={22} style={{ transform: 'scaleX(-1)' }} />
         </div>
 
         {/* Main title */}
@@ -201,7 +194,7 @@ export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
         {/* CTA */}
         <div className="mt-4">
           <div className="text-center text-[10px] uppercase tracking-[0.3em] text-parchment/75 mb-3">
-            · think you're worthy? ·
+            · are you the goat? ·
           </div>
           <button type="button" onClick={handleCTA} className="btn-western">
             Play Flappy Bakra
@@ -209,7 +202,6 @@ export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
           <button
             type="button"
             onClick={() => {
-              sound.play('tap');
               onViewLeaderboard();
             }}
             className="mt-3 w-full text-[12px] text-parchment/75 underline underline-offset-4 min-h-[44px] px-4 rounded-lg active:bg-parchment/5"
@@ -226,11 +218,9 @@ export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
 
       {/* Bottom ornament */}
       <div className="mt-4 flex items-center justify-center gap-4 text-brass/60">
-        <HorseShoe size={18} />
         <span className="font-display text-[11px] tracking-[0.25em]">
           EST. 2026
         </span>
-        <HorseShoe size={18} style={{ transform: 'scaleX(-1)' }} />
       </div>
     </div>
   );
