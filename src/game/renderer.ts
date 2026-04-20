@@ -1,5 +1,5 @@
 export const W = 360;
-export const H = 520;
+export const H = 640;
 export const BIRD_RADIUS = 20;
 export const BIRD_X = 80;
 export const PIPE_WIDTH = 60;

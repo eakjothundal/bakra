@@ -20,6 +20,12 @@ const RARITY: Record<Character, { label: string; stars: number; hue: string }> =
   astro: { label: 'EPIC', stars: 4, hue: '#e6b83a' },
 };
 
+const PORTRAIT_SCALE: Record<Character, number> = {
+  eakjot: 1.3,
+  abel: 1.5,
+  astro: 1.5,
+};
+
 export function CharacterSelectScreen({ onBack, onConfirm, sound }: Props) {
   const [selected, setSelected] = useState<Character | null>(null);
 
@@ -102,7 +108,7 @@ export function CharacterSelectScreen({ onBack, onConfirm, sound }: Props) {
 
               {/* Portrait */}
               <div
-                className="relative w-[68px] h-[68px] rounded-2xl flex items-center justify-center shrink-0 border-[2.5px]"
+                className="relative w-[104px] h-[104px] rounded-2xl flex items-center justify-center shrink-0 border-[2.5px] overflow-hidden"
                 style={{
                   background:
                     'radial-gradient(circle at 35% 25%, #f1c238 0%, #D4A017 55%, #8b6a0f 100%)',
@@ -111,9 +117,14 @@ export function CharacterSelectScreen({ onBack, onConfirm, sound }: Props) {
                     'inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.18), 0 4px 10px rgba(0,0,0,0.3)',
                 }}
               >
-                <span className="text-[42px] leading-none" aria-hidden>
-                  {c.emoji}
-                </span>
+                <img
+                  src={c.sprite}
+                  alt=""
+                  aria-hidden
+                  className="w-full h-full object-contain"
+                  style={{ imageRendering: 'pixelated', transform: `scale(${PORTRAIT_SCALE[key]})` }}
+                />
+                <span className="sr-only">{c.emoji}</span>
                 <SparkleStar
                   size={14}
                   className="absolute -top-2 -right-2"
