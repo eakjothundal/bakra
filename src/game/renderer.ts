@@ -14,14 +14,29 @@ const PIPE_GREEN = '#73BF2E';
 const PIPE_DARK = '#1B8B2F';
 const PIPE_LIGHT = '#95D35C';
 
+const MOUNTAIN_PEAKS: ReadonlyArray<readonly [number, number]> = [
+  [0, 0], [60, -42], [110, -18], [170, -58], [230, -22],
+  [290, -46], [360, -14], [430, -50], [W, -28],
+];
+
+let cachedSky: CanvasGradient | null = null;
+let cachedSkyCtx: CanvasRenderingContext2D | null = null;
+
+function getSkyGradient(ctx: CanvasRenderingContext2D) {
+  if (cachedSky && cachedSkyCtx === ctx) return cachedSky;
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#1a1410');
+  g.addColorStop(0.4, '#3a1a12');
+  g.addColorStop(0.75, '#8b3a1f');
+  g.addColorStop(1, '#D4A017');
+  cachedSky = g;
+  cachedSkyCtx = ctx;
+  return g;
+}
+
 export function drawBackground(ctx: CanvasRenderingContext2D, frame: number) {
   // Sunset gradient sky
-  const sky = ctx.createLinearGradient(0, 0, 0, H);
-  sky.addColorStop(0, '#1a1410');
-  sky.addColorStop(0.4, '#3a1a12');
-  sky.addColorStop(0.75, '#8b3a1f');
-  sky.addColorStop(1, '#D4A017');
-  ctx.fillStyle = sky;
+  ctx.fillStyle = getSkyGradient(ctx);
   ctx.fillRect(0, 0, W, H);
 
   // Sun disc behind scene
@@ -51,14 +66,10 @@ function drawMountains(
   ctx.fillStyle = color;
   ctx.beginPath();
   ctx.moveTo(0, H);
-  const peaks = [
-    [0, 0], [60, -42], [110, -18], [170, -58], [230, -22],
-    [290, -46], [360, -14], [430, -50], [W, -28],
-  ];
   ctx.moveTo(-offset, baseY);
-  peaks.forEach(([x, dy]) => ctx.lineTo(x - offset, baseY + dy));
+  for (const [x, dy] of MOUNTAIN_PEAKS) ctx.lineTo(x - offset, baseY + dy);
   // second pass (wrap)
-  peaks.forEach(([x, dy]) => ctx.lineTo(x + W - offset, baseY + dy));
+  for (const [x, dy] of MOUNTAIN_PEAKS) ctx.lineTo(x + W - offset, baseY + dy);
   ctx.lineTo(W, H);
   ctx.lineTo(0, H);
   ctx.closePath();
