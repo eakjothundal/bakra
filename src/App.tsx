@@ -9,6 +9,8 @@ import { GameScreen } from './screens/GameScreen';
 import { GameOverScreen, type SubmitStatus } from './screens/GameOverScreen';
 import { FirstPlaceScreen } from './screens/FirstPlaceScreen';
 import { LeaderboardScreen } from './screens/LeaderboardScreen';
+import { SaveInviteButton } from './components/SaveInviteButton';
+import { SaveInviteModal } from './components/SaveInviteModal';
 import {
   getOrCreatePlayerId,
   getPlayerName,
@@ -44,6 +46,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('loading');
   const [character, setCharacter] = useState<Character | null>(null);
   const [run, setRun] = useState<RunState>(emptyRun);
+  const [saveOpen, setSaveOpen] = useState(false);
 
   const handleLoadingDone = useCallback(() => {
     markVisited();
@@ -152,6 +155,8 @@ export default function App() {
 
   return (
     <div className="min-h-dvh bg-bg text-parchment relative">
+      {screen !== 'loading' && <SaveInviteButton onClick={() => setSaveOpen(true)} />}
+      <SaveInviteModal open={saveOpen} onClose={() => setSaveOpen(false)} />
       {screen === 'loading' ? (
         <LoadingScreen onComplete={handleLoadingDone} slow={isFirstVisit} />
       ) : null}

@@ -18,7 +18,7 @@ export function InviteScreen({ onStart, onViewLeaderboard }: Props) {
   };
 
   return (
-    <div className="relative min-h-dvh w-full max-w-app mx-auto px-5 pt-6 pb-8 overflow-hidden">
+    <div className="relative min-h-dvh w-full max-w-app mx-auto px-5 pt-12 pb-8 overflow-hidden">
       {/* Background star scatter */}
       <span className="star-scatter top-20 left-4 text-xl motion-safe:animate-twinkle" style={{ animationDelay: '0s' }}>✦</span>
       <span className="star-scatter top-40 right-6 text-base motion-safe:animate-twinkle" style={{ animationDelay: '0.7s' }}>✦</span>
@@ -49,8 +49,10 @@ export function InviteScreen({ onStart, onViewLeaderboard }: Props) {
 
         {/* Top banner */}
         <div className="flex items-center justify-center gap-3 text-brass">
-          <div className="text-[10px] tracking-[0.42em] uppercase font-bold">
-            Summons to the
+          <div className="text-[10px] tracking-[0.32em] uppercase font-bold text-center leading-snug">
+            Abel &amp; Astro
+            <br />
+            Invite You To The
           </div>
         </div>
 
@@ -173,7 +175,7 @@ export function InviteScreen({ onStart, onViewLeaderboard }: Props) {
 
         {/* Details card — ticket-stub style */}
         <div className="mt-3 space-y-0">
-          <DetailRow label="WHEN" value="Tue · May 19, 2026 · 6 PM ONWARDS" />
+          <DetailRow label="WHEN" value="Tue · May 19, 2026 · 6 PM" />
           <DashedDivider />
           <DetailRow
             label="WHERE"
@@ -183,7 +185,7 @@ export function InviteScreen({ onStart, onViewLeaderboard }: Props) {
             ariaLabel="where: 2177 Donovan Dr, Lincoln CA — opens in Google Maps"
           />
           <DashedDivider />
-          <DetailRow label="FIT" value="Wear your GOAT's jersey. Any sport." />
+          <DetailRow label="FIT" value="Wear your GOAT's jersey." />
         </div>
 
         {/* Divider */}
