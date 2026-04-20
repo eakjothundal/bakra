@@ -24,6 +24,12 @@ export function getTableName(): string {
   return name;
 }
 
+export function getEventsTableName(): string {
+  const name = process.env.BAKRA_EVENTS_DDB_TABLE_NAME;
+  if (!name) throw new Error('BAKRA_EVENTS_DDB_TABLE_NAME env var not set');
+  return name;
+}
+
 export function json(status: number, body: unknown) {
   return new Response(JSON.stringify(body), {
     status,

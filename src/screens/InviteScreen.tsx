@@ -6,6 +6,7 @@ import {
   SparkleStar,
   StarBadge,
 } from '../components/Ornaments';
+import { trackEvent } from '../lib/tracking';
 
 interface Props {
   onStart: () => void;
@@ -14,7 +15,12 @@ interface Props {
 
 export function InviteScreen({ onStart, onViewLeaderboard }: Props) {
   const handleCTA = () => {
+    trackEvent('click_play');
     onStart();
+  };
+  const handleLeaderboard = () => {
+    trackEvent('click_leaderboard');
+    onViewLeaderboard();
   };
 
   return (
@@ -203,9 +209,7 @@ export function InviteScreen({ onStart, onViewLeaderboard }: Props) {
           </button>
           <button
             type="button"
-            onClick={() => {
-              onViewLeaderboard();
-            }}
+            onClick={handleLeaderboard}
             className="mt-3 w-full text-[12px] text-parchment/75 underline underline-offset-4 min-h-[44px] px-4 rounded-lg active:bg-parchment/5"
           >
             View Leaderboard →

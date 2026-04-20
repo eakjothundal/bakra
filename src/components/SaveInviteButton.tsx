@@ -1,12 +1,18 @@
+import { trackEvent } from '../lib/tracking';
+
 interface Props {
   onClick: () => void;
 }
 
 export function SaveInviteButton({ onClick }: Props) {
+  const handleClick = () => {
+    trackEvent('click_download');
+    onClick();
+  };
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
       aria-label="Save the invite image"
       className="fixed z-50 w-9 h-9 rounded-full bg-black/70 border border-brass/60 flex items-center justify-center backdrop-blur-sm active:scale-95 transition-transform shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
       style={{

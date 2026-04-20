@@ -6,6 +6,7 @@ import {
   SparkleStar,
   StarBadge,
 } from '../components/Ornaments';
+import { trackEvent } from '../lib/tracking';
 
 interface Props {
   onBack: () => void;
@@ -40,6 +41,7 @@ export function CharacterSelectScreen({ onBack, onConfirm }: Props) {
 
   const handleStart = () => {
     if (!selected) return;
+    trackEvent('character_selected', { character: selected });
     onConfirm(selected);
   };
 

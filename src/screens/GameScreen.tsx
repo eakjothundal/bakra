@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Character } from '../types';
 import { FlappyBakra } from '../game/FlappyBakra';
+import { trackEvent } from '../lib/tracking';
 interface Props {
   character: Character;
   onBack: () => void;
@@ -9,6 +10,10 @@ interface Props {
 
 export function GameScreen({ character, onBack, onGameEnd }: Props) {
   const [score, setScore] = useState(0);
+
+  useEffect(() => {
+    trackEvent('game_started', { character });
+  }, [character]);
 
   return (
     <div className="min-h-dvh w-full max-w-app mx-auto px-4 pt-10 pb-4 flex flex-col">
