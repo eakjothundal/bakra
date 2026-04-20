@@ -20,6 +20,7 @@ import {
   setLastCharacter,
 } from './lib/identity';
 import { fetchLeaderboard, submitScore } from './lib/leaderboardApi';
+import { trackEvent } from './lib/tracking';
 
 interface RunState {
   score: number;
@@ -105,6 +106,7 @@ export default function App() {
   const handleGameEnd = useCallback(
     async (score: number) => {
       if (!character) return;
+      trackEvent('game_ended', { score, character });
 
       if (score < 3) {
         setRun({
@@ -143,6 +145,7 @@ export default function App() {
   const handleProvideName = useCallback(
     async (name: string) => {
       setPlayerName(name);
+      trackEvent('name_provided');
       if (!character) return;
       await submitIfQualified(run.score, name, character);
     },
