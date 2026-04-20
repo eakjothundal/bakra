@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DividerFancy, RaysBurst } from '../components/Ornaments';
 
 const MESSAGES = [
@@ -8,11 +8,21 @@ const MESSAGES = [
   "Pouring Chachu Ji's Desi",
 ];
 
-export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
+export function LoadingScreen({
+  onComplete,
+  slow = false,
+}: {
+  onComplete: () => void;
+  slow?: boolean;
+}) {
   const [progress, setProgress] = useState(0);
+  const firedRef = useRef(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
-    const DURATION = 4500;
+    const BASE_DURATION = 4500;
+    const DURATION = slow ? Math.round(BASE_DURATION * 1.5) : BASE_DURATION;
     const TICK = 80;
     const start = performance.now();
     const id = window.setInterval(() => {
@@ -21,11 +31,13 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
       setProgress(pct);
       if (pct >= 100) {
         window.clearInterval(id);
-        window.setTimeout(onComplete, 600);
+        if (firedRef.current) return;
+        firedRef.current = true;
+        window.setTimeout(() => onCompleteRef.current(), 600);
       }
     }, TICK);
     return () => window.clearInterval(id);
-  }, [onComplete]);
+  }, [slow]);
 
   const msgIndex = Math.min(
     MESSAGES.length - 1,

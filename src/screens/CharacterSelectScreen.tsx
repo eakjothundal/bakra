@@ -14,10 +14,17 @@ interface Props {
   sound: UseSound;
 }
 
-const RARITY: Record<Character, { label: string; stars: number; hue: string }> = {
-  eakjot: { label: 'LEGENDARY', stars: 5, hue: '#D4A017' },
-  abel: { label: 'EPIC', stars: 4, hue: '#c54b2a' },
-  astro: { label: 'EPIC', stars: 4, hue: '#e6b83a' },
+interface Rarity {
+  label: string;
+  stars: number;
+  hue: string;
+  goat?: boolean;
+}
+
+const RARITY: Record<Character, Rarity> = {
+  eakjot: { label: 'GOAT', stars: 5, hue: '#FFF8E7', goat: true },
+  abel: { label: 'LEGENDARY', stars: 5, hue: '#D4A017' },
+  astro: { label: 'LEGENDARY', stars: 5, hue: '#D4A017' },
 };
 
 const PORTRAIT_SCALE: Record<Character, number> = {
@@ -96,14 +103,22 @@ export function CharacterSelectScreen({ onBack, onConfirm, sound }: Props) {
             >
               {/* Rarity corner ribbon */}
               <div
-                className="absolute top-0 right-0 px-3 py-[3px] text-[8px] font-black tracking-[0.2em] uppercase text-bg"
+                className="absolute top-0 right-0 px-3 py-[3px] text-[8px] font-black tracking-[0.2em] uppercase flex items-center gap-[3px]"
                 style={{
-                  background: r.hue,
+                  background: r.goat
+                    ? 'linear-gradient(135deg, #6b0a0a 0%, #a01a1a 45%, #d62828 100%)'
+                    : r.hue,
+                  color: r.goat ? '#FFF8E7' : '#1a1410',
                   clipPath: 'polygon(0 0, 100% 0, 100% 100%, 14% 100%)',
                   paddingLeft: 18,
+                  boxShadow: r.goat
+                    ? 'inset 0 0 0 1px rgba(255,248,231,0.35), 0 2px 8px rgba(160,26,26,0.45)'
+                    : undefined,
+                  textShadow: r.goat ? '0 1px 1px rgba(0,0,0,0.5)' : undefined,
                 }}
               >
-                {r.label}
+                {r.goat && <span aria-hidden>🐐</span>}
+                <span>{r.label}</span>
               </div>
 
               {/* Portrait */}
@@ -138,9 +153,6 @@ export function CharacterSelectScreen({ onBack, onConfirm, sound }: Props) {
                 >
                   {c.name}
                 </div>
-                <div className="mt-1.5 text-[12px] text-parchment/80 leading-snug">
-                  {c.descriptor}
-                </div>
                 <div className="mt-2 flex items-center gap-[2px]">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <span
@@ -152,7 +164,7 @@ export function CharacterSelectScreen({ onBack, onConfirm, sound }: Props) {
                       ★
                     </span>
                   ))}
-                  <span className="ml-2 text-[9px] tracking-[0.2em] uppercase text-parchment/70 font-bold">
+                  <span className="ml-2 text-[9px] tracking-[0.2em] uppercase text-parchment/70 font-bold whitespace-nowrap">
                     {statLabel(c.physics)}
                   </span>
                 </div>

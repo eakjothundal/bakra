@@ -1,5 +1,4 @@
-import { useRef, type PointerEvent } from 'react';
-import { GoatRainLayer, useGoatRain } from '../components/GoatRain';
+import { useState } from 'react';
 import type { UseSound } from '../hooks/useSound';
 import {
   CornerBracket,
@@ -10,6 +9,9 @@ import {
   SparkleStar,
   StarBadge,
 } from '../components/Ornaments';
+import { BAKRA_PARTY_EVENT, downloadICS } from '../lib/calendar';
+import { saveElementAsImage } from '../lib/saveImage';
+import { SaveImageModal } from '../components/SaveImageModal';
 
 interface Props {
   onStart: () => void;
@@ -17,14 +19,44 @@ interface Props {
 }
 
 export function InviteScreen({ onStart, sound }: Props) {
-  const { drops, spawn } = useGoatRain();
-  const rootRef = useRef<HTMLDivElement>(null);
+  const [savingInvite, setSavingInvite] = useState(false);
+  const [longPressUrl, setLongPressUrl] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
-  const handleTap = (e: PointerEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest('[data-no-rain]')) return;
-    const rect = rootRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    spawn(e.clientX - rect.left, e.clientY - rect.top);
+  const flashToast = (msg: string) => {
+    setToast(msg);
+    window.setTimeout(() => setToast(null), 2000);
+  };
+
+  const handleAddToCalendar = () => {
+    sound.play('tap');
+    try {
+      downloadICS(BAKRA_PARTY_EVENT, 'bakra-party-2026.ics');
+      flashToast('calendar event downloaded');
+    } catch {
+      flashToast('calendar download failed');
+    }
+  };
+
+  const handleSaveInvite = async () => {
+    if (savingInvite) return;
+    sound.play('tap');
+    setSavingInvite(true);
+    try {
+      const outcome = await saveElementAsImage('static-invite', 'bakra-party-invite.png', {
+        background: '#1a1410',
+        scale: 2,
+        shareTitle: 'Bakra Party 2026',
+        shareText: 'Bakra Party 2026 — Tue May 19 · 6 PM · Lincoln CA',
+        onLongPressFallback: (url) => setLongPressUrl(url),
+      });
+      if (outcome === 'downloaded') flashToast('invite saved');
+      else if (outcome === 'shared') flashToast('shared!');
+    } catch {
+      flashToast('save failed');
+    } finally {
+      setSavingInvite(false);
+    }
   };
 
   const handleCTA = () => {
@@ -34,13 +66,7 @@ export function InviteScreen({ onStart, sound }: Props) {
   };
 
   return (
-    <div
-      ref={rootRef}
-      onPointerDown={handleTap}
-      className="relative min-h-dvh w-full max-w-app mx-auto px-5 pt-6 pb-8 overflow-hidden"
-    >
-      <GoatRainLayer drops={drops} />
-
+    <div className="relative min-h-dvh w-full max-w-app mx-auto px-5 pt-6 pb-8 overflow-hidden">
       {/* Background star scatter */}
       <span className="star-scatter top-20 left-4 text-xl motion-safe:animate-twinkle" style={{ animationDelay: '0s' }}>✦</span>
       <span className="star-scatter top-40 right-6 text-base motion-safe:animate-twinkle" style={{ animationDelay: '0.7s' }}>✦</span>
@@ -53,10 +79,7 @@ export function InviteScreen({ onStart, sound }: Props) {
       <span className="star-scatter motion-safe:animate-twinkle" style={{ top: '60%', right: '3%', fontSize: 10, animationDelay: '2.2s' }} aria-hidden>✦</span>
 
       {/* Outer wanted-poster frame */}
-      <div
-        data-no-rain
-        className="relative parchment-panel px-4 pt-5 pb-6"
-      >
+      <div className="relative parchment-panel px-4 pt-5 pb-6">
         {/* Corner brackets */}
         <CornerBracket className="absolute -top-2 -left-2" />
         <CornerBracket
@@ -200,12 +223,20 @@ export function InviteScreen({ onStart, sound }: Props) {
 
         {/* Details card — ticket-stub style */}
         <div className="mt-3 space-y-0">
-          <DetailRow label="WHEN" value="Tue · May 19, 2026 · 6 PM ONWARDS" />
+          <DetailRow
+            label="WHEN"
+            value="Tue · May 19, 2026 · 6 PM"
+            hint="tap to add to calendar"
+            onClick={handleAddToCalendar}
+            ariaLabel="when: Tuesday May 19 2026, 6 PM — tap to add to your calendar"
+          />
           <DashedDivider />
           <DetailRow
             label="WHERE"
             value="2177 Donovan Dr, Lincoln CA 95648"
+            hint="tap for directions"
             href="https://maps.google.com/?q=2177+Donovan+Dr+Lincoln+CA+95648"
+            ariaLabel="where: 2177 Donovan Dr, Lincoln CA — opens in Google Maps"
           />
           <DashedDivider />
           <DetailRow label="FIT" value="Wear your GOAT's jersey. Any sport." />
@@ -224,11 +255,19 @@ export function InviteScreen({ onStart, sound }: Props) {
           <button type="button" onClick={handleCTA} className="btn-western">
             Play Flappy Bakra
           </button>
+          <button
+            type="button"
+            onClick={handleSaveInvite}
+            disabled={savingInvite}
+            className="mt-3 w-full min-h-[44px] rounded-xl border border-brass/40 text-brass text-[11px] uppercase tracking-[0.28em] font-bold active:bg-brass/10 disabled:opacity-60"
+          >
+            {savingInvite ? 'preparing…' : '↓ Save Invite'}
+          </button>
         </div>
 
         {/* Footer hint */}
         <div className="mt-4 text-center text-[10px] text-parchment/65 tracking-[0.18em] uppercase">
-          tap around for goat rain · pass 3 pipes to unlock your card
+          pass 3 pipes to unlock your card
         </div>
       </div>
 
@@ -240,6 +279,27 @@ export function InviteScreen({ onStart, sound }: Props) {
         </span>
         <HorseShoe size={18} style={{ transform: 'scaleX(-1)' }} />
       </div>
+
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-3 rounded-xl bg-parchment/10 text-parchment border border-brass/30 text-[12px] font-medium shadow-lg z-40"
+        >
+          {toast}
+        </div>
+      )}
+
+      {longPressUrl && (
+        <SaveImageModal
+          src={longPressUrl}
+          filename="bakra-party-invite.png"
+          onClose={() => {
+            URL.revokeObjectURL(longPressUrl);
+            setLongPressUrl(null);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -257,35 +317,62 @@ function DetailRow({
   label,
   value,
   href,
+  hint,
+  onClick,
+  ariaLabel,
 }: {
   label: string;
   value: string;
   href?: string;
+  hint?: string;
+  onClick?: () => void;
+  ariaLabel?: string;
 }) {
   const content = (
-    <div className="flex items-start gap-4 py-2 min-h-[44px]">
-      <div className="flex flex-col items-center min-w-[52px] pt-[3px]">
-        <div className="text-brass text-[9px] tracking-[0.28em] font-black">
+    <div className="flex items-start gap-5 py-2 min-h-[44px]">
+      <div className="flex flex-col items-start w-[56px] pt-[3px] shrink-0">
+        <div className="text-brass text-[9px] tracking-[0.28em] font-black leading-none">
           {label}
         </div>
-        <div className="w-6 h-px bg-brass/50 mt-[3px]" />
+        <div className="w-7 h-px bg-brass/50 mt-[5px]" />
       </div>
-      <div className="text-[13.5px] leading-[1.45] text-parchment flex-1 font-medium">
-        {value}
+      <div className="flex-1 min-w-0">
+        <div className="text-[13.5px] leading-[1.45] text-parchment font-medium">
+          {value}
+        </div>
+        {hint && (
+          <div className="mt-[3px] text-[8.5px] tracking-[0.28em] uppercase text-brass/70 font-bold">
+            {hint}
+          </div>
+        )}
       </div>
     </div>
   );
+  const interactiveCls =
+    'block active:opacity-70 active:scale-[0.99] transition-transform rounded-md';
   if (href) {
     return (
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`${label.toLowerCase()}: ${value} — opens in Google Maps`}
-        className="block active:opacity-70 active:scale-[0.99] transition-transform rounded-md"
+        aria-label={ariaLabel ?? `${label.toLowerCase()}: ${value}`}
+        className={interactiveCls}
       >
         {content}
       </a>
+    );
+  }
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={ariaLabel ?? `${label.toLowerCase()}: ${value}`}
+        className={`${interactiveCls} w-full text-left`}
+      >
+        {content}
+      </button>
     );
   }
   return content;
