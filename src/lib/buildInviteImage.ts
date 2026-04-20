@@ -494,7 +494,7 @@ export async function buildInviteImage(heroSrc: string): Promise<string> {
   // Footer inside the panel — website link
   drawCenteredText(
     ctx,
-    'EAKJOT.DEV/BAKRA',
+    'HTTPS://EAKJOT.NETLIFY.APP',
     cx,
     cy + 24,
     '900 28px "Inter", sans-serif',
