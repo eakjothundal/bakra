@@ -13,10 +13,11 @@ import {
 
 interface Props {
   onStart: () => void;
+  onViewLeaderboard: () => void;
   sound: UseSound;
 }
 
-export function InviteScreen({ onStart, sound }: Props) {
+export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
   const { drops, spawn } = useGoatRain();
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -224,11 +225,21 @@ export function InviteScreen({ onStart, sound }: Props) {
           <button type="button" onClick={handleCTA} className="btn-western">
             Play Flappy Bakra
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              sound.play('tap');
+              onViewLeaderboard();
+            }}
+            className="mt-3 w-full text-[12px] text-parchment/75 underline underline-offset-4 min-h-[44px] px-4 rounded-lg active:bg-parchment/5"
+          >
+            View Leaderboard →
+          </button>
         </div>
 
         {/* Footer hint */}
         <div className="mt-4 text-center text-[10px] text-parchment/65 tracking-[0.18em] uppercase">
-          tap around for goat rain · pass 3 pipes to unlock your card
+          tap around for goat rain · flap your way onto the leaderboard
         </div>
       </div>
 
