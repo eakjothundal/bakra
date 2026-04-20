@@ -6,8 +6,6 @@ const BG_WARM = '#2a1b12';
 const BRASS = '#d4a017';
 const BRASS_DIM = 'rgba(212,160,23,0.5)';
 const PARCHMENT = '#fff8e7';
-const PARCHMENT_MUTED = 'rgba(255,248,231,0.78)';
-const RUST = '#8b3a1f';
 
 async function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -213,7 +211,6 @@ function drawDetailRow(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
-  contentWidth: number,
   label: string,
   lines: string[],
 ) {
@@ -471,21 +468,21 @@ export async function buildInviteImage(heroSrc: string): Promise<string> {
   const detailsX = panelX + 80;
   const contentW = panelW - 160;
 
-  let used = drawDetailRow(ctx, detailsX, cy, contentW, 'WHEN', [
+  let used = drawDetailRow(ctx, detailsX, cy,'WHEN', [
     'Tue · May 19, 2026 · 6 PM',
   ]);
   cy += used + 18;
   drawDashedDivider(ctx, detailsX, detailsX + contentW, cy);
   cy += 18;
 
-  used = drawDetailRow(ctx, detailsX, cy, contentW, 'WHERE', [
+  used = drawDetailRow(ctx, detailsX, cy,'WHERE', [
     '2177 Donovan Dr, Lincoln CA',
   ]);
   cy += used + 18;
   drawDashedDivider(ctx, detailsX, detailsX + contentW, cy);
   cy += 18;
 
-  used = drawDetailRow(ctx, detailsX, cy, contentW, 'FIT', [
+  used = drawDetailRow(ctx, detailsX, cy,'FIT', [
     "Wear your GOAT's jersey",
   ]);
   cy += used + 24;
