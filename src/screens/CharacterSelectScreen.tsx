@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { CHARACTER_ORDER, CHARACTERS } from '../game/characters';
 import type { Character } from '../types';
-import type { UseSound } from '../hooks/useSound';
 import {
   DividerFancy,
   SparkleStar,
@@ -11,7 +10,6 @@ import {
 interface Props {
   onBack: () => void;
   onConfirm: (c: Character) => void;
-  sound: UseSound;
 }
 
 interface Rarity {
@@ -33,17 +31,15 @@ const PORTRAIT_SCALE: Record<Character, number> = {
   astro: 1.5,
 };
 
-export function CharacterSelectScreen({ onBack, onConfirm, sound }: Props) {
+export function CharacterSelectScreen({ onBack, onConfirm }: Props) {
   const [selected, setSelected] = useState<Character | null>(null);
 
   const handleSelect = (c: Character) => {
-    sound.play('tap');
     setSelected(c);
   };
 
   const handleStart = () => {
     if (!selected) return;
-    sound.play('tap');
     onConfirm(selected);
   };
 
@@ -171,7 +167,7 @@ export function CharacterSelectScreen({ onBack, onConfirm, sound }: Props) {
               </div>
 
               {isSel && (
-                <StarBadge size={28} className="shrink-0" />
+                <StarBadge size={28} className="absolute bottom-3 right-3 pointer-events-none" />
               )}
             </button>
           );

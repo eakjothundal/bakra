@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Character, LeaderboardEntry, Screen } from './types';
 import { useFirstVisit } from './hooks/useFirstVisit';
-import { useSound } from './hooks/useSound';
 import { LoadingScreen } from './screens/LoadingScreen';
 import { InviteScreen } from './screens/InviteScreen';
 import { CharacterSelectScreen } from './screens/CharacterSelectScreen';
@@ -10,7 +9,6 @@ import { GameScreen } from './screens/GameScreen';
 import { GameOverScreen, type SubmitStatus } from './screens/GameOverScreen';
 import { FirstPlaceScreen } from './screens/FirstPlaceScreen';
 import { LeaderboardScreen } from './screens/LeaderboardScreen';
-import { SoundToggle } from './components/SoundToggle';
 import {
   getOrCreatePlayerId,
   getPlayerName,
@@ -46,7 +44,6 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('loading');
   const [character, setCharacter] = useState<Character | null>(null);
   const [run, setRun] = useState<RunState>(emptyRun);
-  const sound = useSound();
 
   const handleLoadingDone = useCallback(() => {
     markVisited();
@@ -155,8 +152,6 @@ export default function App() {
 
   return (
     <div className="min-h-dvh bg-bg text-parchment relative">
-      {screen !== 'loading' && <SoundToggle sound={sound} />}
-
       {screen === 'loading' ? (
         <LoadingScreen onComplete={handleLoadingDone} slow={isFirstVisit} />
       ) : null}
@@ -167,7 +162,6 @@ export default function App() {
             <InviteScreen
               onStart={() => setScreen('select')}
               onViewLeaderboard={() => setScreen('leaderboard')}
-              sound={sound}
             />
           </motion.div>
         )}
@@ -185,7 +179,6 @@ export default function App() {
                 setLastCharacter(c);
                 setScreen('game');
               }}
-              sound={sound}
             />
           </motion.div>
         )}
@@ -193,7 +186,6 @@ export default function App() {
           <motion.div key="game" {...fade}>
             <GameScreen
               character={character}
-              sound={sound}
               onBack={() => setScreen('invite')}
               onGameEnd={handleGameEnd}
             />
