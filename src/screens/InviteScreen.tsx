@@ -9,7 +9,6 @@ import {
   SparkleStar,
   StarBadge,
 } from '../components/Ornaments';
-import { BAKRA_PARTY_EVENT, downloadICS } from '../lib/calendar';
 import { saveElementAsImage } from '../lib/saveImage';
 import { SaveImageModal } from '../components/SaveImageModal';
 
@@ -26,16 +25,6 @@ export function InviteScreen({ onStart, sound }: Props) {
   const flashToast = (msg: string) => {
     setToast(msg);
     window.setTimeout(() => setToast(null), 2000);
-  };
-
-  const handleAddToCalendar = () => {
-    sound.play('tap');
-    try {
-      downloadICS(BAKRA_PARTY_EVENT, 'bakra-party-2026.ics');
-      flashToast('calendar event downloaded');
-    } catch {
-      flashToast('calendar download failed');
-    }
   };
 
   const handleSaveInvite = async () => {
@@ -226,9 +215,6 @@ export function InviteScreen({ onStart, sound }: Props) {
           <DetailRow
             label="WHEN"
             value="Tue · May 19, 2026 · 6 PM"
-            hint="tap to add to calendar"
-            onClick={handleAddToCalendar}
-            ariaLabel="when: Tuesday May 19 2026, 6 PM — tap to add to your calendar"
           />
           <DashedDivider />
           <DetailRow
