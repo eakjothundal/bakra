@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateSubmit } from './submit-score.validate';
+import { validateSubmit } from './functions/submit-score-validate';
 
 const ok = {
   playerId: '550e8400-e29b-41d4-a716-446655440000',

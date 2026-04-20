@@ -1,7 +1,7 @@
 import { GetCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { ConditionalCheckFailedException } from '@aws-sdk/client-dynamodb';
 import { getDoc, getTableName, json } from './_shared';
-import { validateSubmit } from './submit-score.validate';
+import { validateSubmit } from './submit-score-validate';
 
 export default async function handler(req: Request): Promise<Response> {
   if (req.method !== 'POST') return json(405, { error: 'method not allowed' });

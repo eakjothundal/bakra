@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: false,
-    include: ['src/**/*.test.ts', 'netlify/functions/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'netlify/**/*.test.ts'],
     passWithNoTests: true,
   },
 });
