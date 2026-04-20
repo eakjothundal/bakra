@@ -112,8 +112,11 @@ export default function App() {
           score,
           personalBest: getPersonalBest(),
           playerName: getPlayerName(),
+          entriesLoading: true,
         });
         setScreen('gameOver');
+        const entries = await fetchLeaderboard();
+        setRun((r) => ({ ...r, entries, entriesLoading: false }));
         return;
       }
 
