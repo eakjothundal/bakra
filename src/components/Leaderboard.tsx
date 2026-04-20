@@ -5,6 +5,7 @@ interface Props {
   highlightPlayerId?: string | null;
   loading?: boolean;
   maxVisible?: number;
+  fill?: boolean;
 }
 
 const EMOJI: Record<Character, string> = {
@@ -18,6 +19,7 @@ export function Leaderboard({
   highlightPlayerId,
   loading = false,
   maxVisible = 10,
+  fill = false,
 }: Props) {
   if (loading && entries.length === 0) {
     return (
@@ -36,10 +38,11 @@ export function Leaderboard({
   }
 
   const cap = maxVisible;
-  const visibleClass =
-    entries.length > cap
-      ? 'max-h-[calc(var(--row-h)*10)] overflow-y-auto pr-1'
-      : '';
+  const visibleClass = fill
+    ? 'h-full'
+    : entries.length > cap
+    ? 'max-h-[calc(var(--row-h)*10)] overflow-y-auto pr-1'
+    : '';
 
   return (
     <div
