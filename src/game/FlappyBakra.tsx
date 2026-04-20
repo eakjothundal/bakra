@@ -120,7 +120,9 @@ export function FlappyBakra({ character, onScore, onGameEnd }: Props) {
         }
 
         for (const p of s.pipes) p.x -= SCROLL_SPEED;
-        s.pipes = s.pipes.filter((p) => p.x + PIPE_WIDTH > -60);
+        for (let i = s.pipes.length - 1; i >= 0; i--) {
+          if (s.pipes[i].x + PIPE_WIDTH <= -60) s.pipes.splice(i, 1);
+        }
 
         // Score detection (before moving bird x — bird x is fixed anyway)
         for (const p of s.pipes) {
