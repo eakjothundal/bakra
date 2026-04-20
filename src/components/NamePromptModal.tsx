@@ -49,7 +49,7 @@ export function NamePromptModal({ onSubmit }: Props) {
             setValue(e.target.value);
             if (error) setError(null);
           }}
-          placeholder="Bibek"
+          placeholder="Enter name"
           className="mt-5 w-full rounded-lg border border-brass/40 bg-parchment/5 px-3 py-3 text-[16px] text-parchment outline-none focus:border-brass"
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={error ? 'name-error' : undefined}
