@@ -1,7 +1,6 @@
 const W = 1080;
 const H = 1920;
 
-const BG = '#1a1410';
 const PARCHMENT = '#FFF8E7';
 const BRASS = '#D4A017';
 const RUST = '#8B3A1F';
