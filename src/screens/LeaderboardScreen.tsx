@@ -36,7 +36,7 @@ export function LeaderboardScreen({ onBack }: Props) {
       </div>
 
       <div className="mt-8 flex-1 border border-brass/20 rounded-xl p-4 overflow-y-auto">
-        <Leaderboard entries={entries} loading={loading} highlightPlayerId={playerId} />
+        <Leaderboard entries={entries} loading={loading} highlightPlayerId={playerId} fill />
       </div>
     </div>
   );
