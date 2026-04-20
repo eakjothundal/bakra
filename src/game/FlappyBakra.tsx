@@ -12,7 +12,6 @@ import {
   PIPE_WIDTH,
   SCROLL_SPEED,
   W,
-  WIN_SCORE,
   drawBackground,
   drawBird,
   drawFloor,
@@ -25,7 +24,7 @@ interface Props {
   character: Character;
   sound: UseSound;
   onScore: (n: number) => void;
-  onWin: () => void;
+  onGameEnd: (score: number) => void;
 }
 
 interface Pipe {
@@ -36,7 +35,7 @@ interface Pipe {
 
 type Phase = 'waiting' | 'playing' | 'gameover';
 
-export function FlappyBakra({ character, sound, onScore, onWin }: Props) {
+export function FlappyBakra({ character, sound, onScore, onGameEnd }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
   const stateRef = useRef({
@@ -46,8 +45,6 @@ export function FlappyBakra({ character, sound, onScore, onWin }: Props) {
     pipes: [] as Pipe[],
     frame: 0,
     score: 0,
-    winTriggered: false,
-    winDelayAt: 0,
   });
   const spriteRef = useRef<HTMLImageElement | null>(null);
 
@@ -85,8 +82,6 @@ export function FlappyBakra({ character, sound, onScore, onWin }: Props) {
         pipes: [],
         frame: 0,
         score: 0,
-        winTriggered: false,
-        winDelayAt: 0,
       };
       onScore(0);
     };
@@ -137,12 +132,6 @@ export function FlappyBakra({ character, sound, onScore, onWin }: Props) {
             s.score++;
             sound.play('score');
             onScore(s.score);
-            if (s.score >= WIN_SCORE && !s.winTriggered) {
-              s.winTriggered = true;
-              s.phase = 'gameover';
-              s.winDelayAt = performance.now();
-              sound.play('victory');
-            }
           }
         }
 
@@ -165,9 +154,10 @@ export function FlappyBakra({ character, sound, onScore, onWin }: Props) {
             }
           }
         }
-        if ((hitFloor || hitCeiling || hitPipe) && !s.winTriggered) {
+        if (hitFloor || hitCeiling || hitPipe) {
           s.phase = 'gameover';
           sound.play('death');
+          onGameEnd(s.score);
         }
         if (hitFloor) s.birdY = H - FLOOR_HEIGHT - BIRD_RADIUS;
       }
@@ -185,38 +175,21 @@ export function FlappyBakra({ character, sound, onScore, onWin }: Props) {
           [
             { text: '★ FLAPPY BAKRA ★', size: 16, color: '#D4A017', weight: 700 },
             { text: 'TAP TO FLAP', size: 30, color: '#FFF8E7', font: 'rye', shadow: true },
-            { text: 'dodge 3 pipes to unlock the card', size: 12, color: '#FFF8E7', weight: 500 },
+            { text: 'how high can you fly?', size: 12, color: '#FFF8E7', weight: 500 },
           ],
           0.7,
         );
       } else if (s.phase === 'gameover') {
-        if (s.winTriggered) {
-          drawOverlay(
-            ctx,
-            [
-              { text: '✦ VICTORY ✦', size: 14, color: '#D4A017', weight: 700 },
-              { text: 'YOU GOT GOATED', size: 28, color: '#FFF8E7', font: 'rye', shadow: true },
-              { text: `Final score · ${s.score}`, size: 14, color: '#D4A017', weight: 700, font: 'mono' },
-              { text: 'unlocking your rookie card…', size: 11, color: '#FFF8E7', weight: 500 },
-            ],
-            0.82,
-          );
-          if (performance.now() - s.winDelayAt >= 1000) {
-            onWin();
-            s.winTriggered = false;
-          }
-        } else {
-          drawOverlay(
-            ctx,
-            [
-              { text: '✦ GAME OVER ✦', size: 14, color: '#8b3a1f', weight: 700 },
-              { text: 'YOU GOT GOATED', size: 28, color: '#D4A017', font: 'rye', shadow: true },
-              { text: `score · ${s.score}`, size: 14, color: '#FFF8E7', weight: 700, font: 'mono' },
-              { text: 'tap to try again', size: 12, color: '#FFF8E7', weight: 500 },
-            ],
-            0.82,
-          );
-        }
+        drawOverlay(
+          ctx,
+          [
+            { text: '✦ GAME OVER ✦', size: 14, color: '#8b3a1f', weight: 700 },
+            { text: 'YOU GOT GOATED', size: 28, color: '#D4A017', font: 'rye', shadow: true },
+            { text: `score · ${s.score}`, size: 14, color: '#FFF8E7', weight: 700, font: 'mono' },
+            { text: 'tap to try again', size: 12, color: '#FFF8E7', weight: 500 },
+          ],
+          0.82,
+        );
       }
 
       rafRef.current = requestAnimationFrame(loop);
@@ -228,7 +201,7 @@ export function FlappyBakra({ character, sound, onScore, onWin }: Props) {
       canvas.removeEventListener('mousedown', handleDown);
       canvas.removeEventListener('touchstart', handleDown);
     };
-  }, [charCfg, sound, onScore, onWin]);
+  }, [charCfg, sound, onScore, onGameEnd]);
 
   return (
     <canvas
