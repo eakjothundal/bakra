@@ -6,9 +6,16 @@ const BRASS = '#D4A017';
 const RUST = '#8B3A1F';
 const BRASS_DIM = 'rgba(212,160,23,0.55)';
 
+// Hero section: 760×640 canvas. Hero image is 1024×1536 (ratio 1.5 h:w).
+// At height 620px the image is 413px wide — fits inside 760px wide container.
+const HERO_W = 760;
+const HERO_H = 640;
+const CX = 380; // center x
+const CY = 320; // center y (HERO_H / 2)
+const RAYS = 28;
+
 export function StaticInvite() {
   const heroSrc = `${import.meta.env.BASE_URL}hero-eakjot.png`;
-  const RAYS = 28;
 
   return (
     <div
@@ -29,22 +36,30 @@ export function StaticInvite() {
       }}
       aria-hidden
     >
-      {/* Outer parchment-style frame */}
+      {/* Outer frame — explicit sides for html2canvas compatibility */}
       <div
         style={{
           position: 'absolute',
-          inset: 40,
+          top: 40,
+          right: 40,
+          bottom: 40,
+          left: 40,
           border: `4px double ${BRASS}`,
           borderRadius: 28,
           boxShadow: 'inset 0 0 0 2px rgba(139,58,31,0.45)',
+          pointerEvents: 'none',
         }}
       />
       <div
         style={{
           position: 'absolute',
-          inset: 64,
+          top: 64,
+          right: 64,
+          bottom: 64,
+          left: 64,
           border: `2px dashed ${BRASS_DIM}`,
           borderRadius: 18,
+          pointerEvents: 'none',
         }}
       />
 
@@ -69,11 +84,14 @@ export function StaticInvite() {
         </div>
       ))}
 
-      {/* Inner content */}
+      {/* Inner content — explicit sides for html2canvas compatibility */}
       <div
         style={{
           position: 'absolute',
-          inset: 110,
+          top: 110,
+          right: 110,
+          bottom: 110,
+          left: 110,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -100,10 +118,10 @@ export function StaticInvite() {
         {/* Title */}
         <h1
           style={{
-            marginTop: 22,
+            marginTop: 18,
             marginBottom: 0,
             fontFamily: 'Rye, serif',
-            fontSize: 196,
+            fontSize: 192,
             lineHeight: 0.92,
             color: PARCHMENT,
             textAlign: 'center',
@@ -119,7 +137,7 @@ export function StaticInvite() {
         {/* Subtitle */}
         <div
           style={{
-            marginTop: 18,
+            marginTop: 14,
             color: BRASS,
             fontWeight: 800,
             letterSpacing: 12,
@@ -135,13 +153,14 @@ export function StaticInvite() {
           <span>✦</span>
         </div>
 
-        {/* Hero with rays */}
+        {/* Hero with rays — fixed 760×640 so height-constrained image can't overflow */}
         <div
           style={{
             position: 'relative',
-            marginTop: 50,
-            width: 760,
-            height: 760,
+            marginTop: 22,
+            width: HERO_W,
+            height: HERO_H,
+            flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -149,27 +168,27 @@ export function StaticInvite() {
         >
           {/* Sun rays */}
           <svg
-            width={760}
-            height={760}
-            viewBox="0 0 760 760"
-            style={{ position: 'absolute', inset: 0, opacity: 0.7 }}
+            width={HERO_W}
+            height={HERO_H}
+            viewBox={`0 0 ${HERO_W} ${HERO_H}`}
+            style={{ position: 'absolute', top: 0, left: 0, opacity: 0.7 }}
           >
             <defs>
-              <radialGradient id="sun-glow" cx="50%" cy="48%" r="50%">
+              <radialGradient id="si-sun-glow" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stopColor="rgba(245,208,96,0.55)" />
                 <stop offset="40%" stopColor="rgba(212,160,23,0.32)" />
                 <stop offset="75%" stopColor="rgba(212,160,23,0)" />
               </radialGradient>
             </defs>
-            <circle cx={380} cy={365} r={300} fill="url(#sun-glow)" />
+            <circle cx={CX} cy={CY} r={260} fill="url(#si-sun-glow)" />
             {Array.from({ length: RAYS }).map((_, i) => {
               const angle = (i / RAYS) * Math.PI * 2;
-              const inner = 230;
-              const outer = 365;
-              const x1 = 380 + Math.cos(angle) * inner;
-              const y1 = 380 + Math.sin(angle) * inner;
-              const x2 = 380 + Math.cos(angle) * outer;
-              const y2 = 380 + Math.sin(angle) * outer;
+              const inner = 185;
+              const outer = 280;
+              const x1 = CX + Math.cos(angle) * inner;
+              const y1 = CY + Math.sin(angle) * inner;
+              const x2 = CX + Math.cos(angle) * outer;
+              const y2 = CY + Math.sin(angle) * outer;
               return (
                 <line
                   key={i}
@@ -186,9 +205,9 @@ export function StaticInvite() {
             })}
             {/* Outer dashed ring */}
             <circle
-              cx={380}
-              cy={380}
-              r={355}
+              cx={CX}
+              cy={CY}
+              r={295}
               fill="none"
               stroke={BRASS}
               strokeWidth={2}
@@ -197,9 +216,9 @@ export function StaticInvite() {
             />
             {/* Inner ring */}
             <circle
-              cx={380}
-              cy={380}
-              r={325}
+              cx={CX}
+              cy={CY}
+              r={268}
               fill="none"
               stroke={BRASS}
               strokeWidth={1}
@@ -210,31 +229,31 @@ export function StaticInvite() {
 
           {/* Curved text ring */}
           <svg
-            width={760}
-            height={760}
-            viewBox="0 0 760 760"
-            style={{ position: 'absolute', inset: 0 }}
+            width={HERO_W}
+            height={HERO_H}
+            viewBox={`0 0 ${HERO_W} ${HERO_H}`}
+            style={{ position: 'absolute', top: 0, left: 0 }}
           >
             <defs>
               <path
-                id="static-ring-path"
-                d="M380,380 m-340,0 a340,340 0 1,1 680,0 a340,340 0 1,1 -680,0"
+                id="si-ring-path"
+                d={`M${CX},${CY} m-280,0 a280,280 0 1,1 560,0 a280,280 0 1,1 -560,0`}
               />
             </defs>
             <text
-              fontSize={26}
+              fontSize={22}
               fontFamily="Rye, serif"
-              letterSpacing={12}
+              letterSpacing={10}
               fill={BRASS}
               fontWeight={700}
             >
-              <textPath href="#static-ring-path">
+              <textPath href="#si-ring-path">
                 ★ BAKRA PARTY 2026 ★ LINCOLN CA ★ MAY 19 ★ A GOATED OCCASION
               </textPath>
             </text>
           </svg>
 
-          {/* Hero image */}
+          {/* Hero image — height-constrained so it can never overflow the container */}
           <img
             src={heroSrc}
             alt=""
@@ -242,11 +261,10 @@ export function StaticInvite() {
             style={{
               position: 'relative',
               zIndex: 2,
-              width: 560,
-              height: 'auto',
+              height: 620,
+              width: 'auto',
+              maxWidth: HERO_W,
               display: 'block',
-              filter:
-                'drop-shadow(0 0 40px rgba(212,160,23,0.45)) drop-shadow(0 30px 50px rgba(0,0,0,0.7))',
             }}
           />
         </div>
@@ -255,7 +273,7 @@ export function StaticInvite() {
         <Divider label="THE DETAILS" />
 
         {/* Details */}
-        <div style={{ marginTop: 24, width: '100%', maxWidth: 760 }}>
+        <div style={{ marginTop: 18, width: '100%', maxWidth: 760 }}>
           <DetailRow label="WHEN" value="TUE · MAY 19, 2026 · 6 PM" />
           <DashedRow />
           <DetailRow label="WHERE" value="2177 DONOVAN DR, LINCOLN CA" />
@@ -270,7 +288,7 @@ export function StaticInvite() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 12,
+            gap: 10,
           }}
         >
           <Divider />
@@ -323,7 +341,7 @@ function Divider({ label }: { label?: string }) {
   return (
     <div
       style={{
-        marginTop: 30,
+        marginTop: 20,
         display: 'flex',
         alignItems: 'center',
         gap: 18,
@@ -357,7 +375,7 @@ function DashedRow() {
       style={{
         height: 0,
         borderTop: `2px dashed ${BRASS_DIM}`,
-        margin: '14px 0',
+        margin: '12px 0',
       }}
     />
   );
@@ -365,13 +383,13 @@ function DashedRow() {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 32, padding: '8px 0' }}>
-      <div style={{ width: 140, flexShrink: 0 }}>
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 28, padding: '8px 0' }}>
+      <div style={{ width: 120, flexShrink: 0 }}>
         <div
           style={{
             color: BRASS,
             fontWeight: 900,
-            fontSize: 22,
+            fontSize: 20,
             letterSpacing: 7,
             textTransform: 'uppercase',
             lineHeight: 1,
@@ -379,16 +397,16 @@ function DetailRow({ label, value }: { label: string; value: string }) {
         >
           {label}
         </div>
-        <div style={{ width: 60, height: 2, background: BRASS_DIM, marginTop: 8 }} />
+        <div style={{ width: 50, height: 2, background: BRASS_DIM, marginTop: 8 }} />
       </div>
       <div
         style={{
           flex: 1,
           color: PARCHMENT,
           fontWeight: 700,
-          fontSize: 32,
-          letterSpacing: 2,
-          lineHeight: 1.25,
+          fontSize: 28,
+          letterSpacing: 1,
+          lineHeight: 1.3,
         }}
       >
         {value}
