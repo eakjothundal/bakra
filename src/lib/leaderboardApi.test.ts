@@ -6,7 +6,7 @@ describe('leaderboardApi', () => {
 
   describe('fetchLeaderboard', () => {
     it('returns entries on success', async () => {
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(
           JSON.stringify({
             entries: [
@@ -22,13 +22,13 @@ describe('leaderboardApi', () => {
     });
 
     it('returns [] on server error', async () => {
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce(new Response('{}', { status: 500 }));
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('{}', { status: 500 }));
       const entries = await fetchLeaderboard();
       expect(entries).toEqual([]);
     });
 
     it('returns [] on network error', async () => {
-      vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('offline'));
+      vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('offline'));
       const entries = await fetchLeaderboard();
       expect(entries).toEqual([]);
     });
@@ -43,7 +43,7 @@ describe('leaderboardApi', () => {
     };
 
     it('returns accepted on 200 {accepted:true}', async () => {
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ accepted: true, newScore: 4 }), { status: 200 }),
       );
       const r = await submitScore(payload);
@@ -51,7 +51,7 @@ describe('leaderboardApi', () => {
     });
 
     it('returns rejected on 200 {accepted:false}', async () => {
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
         new Response(JSON.stringify({ accepted: false, serverScore: 9 }), { status: 200 }),
       );
       const r = await submitScore(payload);
@@ -59,7 +59,7 @@ describe('leaderboardApi', () => {
     });
 
     it('throws on non-200', async () => {
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce(new Response('{}', { status: 500 }));
+      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('{}', { status: 500 }));
       await expect(submitScore(payload)).rejects.toThrow();
     });
   });
