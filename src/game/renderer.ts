@@ -3,10 +3,10 @@ export const H = 640;
 export const BIRD_RADIUS = 20;
 export const BIRD_X = 80;
 export const PIPE_WIDTH = 60;
-export const PIPE_GAP = 160;
+export const PIPE_GAP = 200;
 export const PIPE_CAP_HEIGHT = 30;
 export const PIPE_CAP_OVERHANG = 8;
-export const PIPE_SPAWN_INTERVAL = 85;
+export const PIPE_SPAWN_INTERVAL = 110;
 export const SCROLL_SPEED = 2.3;
 export const FLOOR_HEIGHT = 10;
 

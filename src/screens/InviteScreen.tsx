@@ -1,5 +1,3 @@
-import { useRef, type PointerEvent } from 'react';
-import { GoatRainLayer, useGoatRain } from '../components/GoatRain';
 import type { UseSound } from '../hooks/useSound';
 import {
   CornerBracket,
@@ -18,16 +16,6 @@ interface Props {
 }
 
 export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
-  const { drops, spawn } = useGoatRain();
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  const handleTap = (e: PointerEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest('[data-no-rain]')) return;
-    const rect = rootRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    spawn(e.clientX - rect.left, e.clientY - rect.top);
-  };
-
   const handleCTA = () => {
     void sound.unlock();
     sound.play('tap');
@@ -35,13 +23,7 @@ export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
   };
 
   return (
-    <div
-      ref={rootRef}
-      onPointerDown={handleTap}
-      className="relative min-h-dvh w-full max-w-app mx-auto px-5 pt-6 pb-8 overflow-hidden"
-    >
-      <GoatRainLayer drops={drops} />
-
+    <div className="relative min-h-dvh w-full max-w-app mx-auto px-5 pt-6 pb-8 overflow-hidden">
       {/* Background star scatter */}
       <span className="star-scatter top-20 left-4 text-xl motion-safe:animate-twinkle" style={{ animationDelay: '0s' }}>✦</span>
       <span className="star-scatter top-40 right-6 text-base motion-safe:animate-twinkle" style={{ animationDelay: '0.7s' }}>✦</span>
@@ -54,10 +36,7 @@ export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
       <span className="star-scatter motion-safe:animate-twinkle" style={{ top: '60%', right: '3%', fontSize: 10, animationDelay: '2.2s' }} aria-hidden>✦</span>
 
       {/* Outer wanted-poster frame */}
-      <div
-        data-no-rain
-        className="relative parchment-panel px-4 pt-5 pb-6"
-      >
+      <div className="relative parchment-panel px-4 pt-5 pb-6">
         {/* Corner brackets */}
         <CornerBracket className="absolute -top-2 -left-2" />
         <CornerBracket
@@ -206,7 +185,9 @@ export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
           <DetailRow
             label="WHERE"
             value="2177 Donovan Dr, Lincoln CA 95648"
+            hint="tap for directions"
             href="https://maps.google.com/?q=2177+Donovan+Dr+Lincoln+CA+95648"
+            ariaLabel="where: 2177 Donovan Dr, Lincoln CA — opens in Google Maps"
           />
           <DashedDivider />
           <DetailRow label="FIT" value="Wear your GOAT's jersey. Any sport." />
@@ -239,7 +220,7 @@ export function InviteScreen({ onStart, onViewLeaderboard, sound }: Props) {
 
         {/* Footer hint */}
         <div className="mt-4 text-center text-[10px] text-parchment/65 tracking-[0.18em] uppercase">
-          tap around for goat rain · flap your way onto the leaderboard
+          flap your way onto the leaderboard
         </div>
       </div>
 
@@ -268,35 +249,62 @@ function DetailRow({
   label,
   value,
   href,
+  hint,
+  onClick,
+  ariaLabel,
 }: {
   label: string;
   value: string;
   href?: string;
+  hint?: string;
+  onClick?: () => void;
+  ariaLabel?: string;
 }) {
   const content = (
-    <div className="flex items-start gap-4 py-2 min-h-[44px]">
-      <div className="flex flex-col items-center min-w-[52px] pt-[3px]">
-        <div className="text-brass text-[9px] tracking-[0.28em] font-black">
+    <div className="flex items-start gap-5 py-2 min-h-[44px]">
+      <div className="flex flex-col items-start w-[56px] pt-[3px] shrink-0">
+        <div className="text-brass text-[9px] tracking-[0.28em] font-black leading-none">
           {label}
         </div>
-        <div className="w-6 h-px bg-brass/50 mt-[3px]" />
+        <div className="w-7 h-px bg-brass/50 mt-[5px]" />
       </div>
-      <div className="text-[13.5px] leading-[1.45] text-parchment flex-1 font-medium">
-        {value}
+      <div className="flex-1 min-w-0">
+        <div className="text-[13.5px] leading-[1.45] text-parchment font-medium">
+          {value}
+        </div>
+        {hint && (
+          <div className="mt-[3px] text-[8.5px] tracking-[0.28em] uppercase text-brass/70 font-bold">
+            {hint}
+          </div>
+        )}
       </div>
     </div>
   );
+  const interactiveCls =
+    'block active:opacity-70 active:scale-[0.99] transition-transform rounded-md';
   if (href) {
     return (
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`${label.toLowerCase()}: ${value} — opens in Google Maps`}
-        className="block active:opacity-70 active:scale-[0.99] transition-transform rounded-md"
+        aria-label={ariaLabel ?? `${label.toLowerCase()}: ${value}`}
+        className={interactiveCls}
       >
         {content}
       </a>
+    );
+  }
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={ariaLabel ?? `${label.toLowerCase()}: ${value}`}
+        className={`${interactiveCls} w-full text-left`}
+      >
+        {content}
+      </button>
     );
   }
   return content;

@@ -5,7 +5,11 @@ const KEY = 'bakra:visited';
 export function useFirstVisit() {
   const [isFirstVisit] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    return localStorage.getItem(KEY) !== '1';
+    try {
+      return localStorage.getItem(KEY) !== '1';
+    } catch {
+      return false;
+    }
   });
 
   const markVisited = () => {

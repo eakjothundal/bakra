@@ -43,7 +43,7 @@ const emptyRun: RunState = {
 
 export default function App() {
   const { isFirstVisit, markVisited } = useFirstVisit();
-  const [screen, setScreen] = useState<Screen>(isFirstVisit ? 'loading' : 'invite');
+  const [screen, setScreen] = useState<Screen>('loading');
   const [character, setCharacter] = useState<Character | null>(null);
   const [run, setRun] = useState<RunState>(emptyRun);
   const sound = useSound();
@@ -157,12 +157,11 @@ export default function App() {
     <div className="min-h-dvh bg-bg text-parchment relative">
       {screen !== 'loading' && <SoundToggle sound={sound} />}
 
-      <AnimatePresence mode="wait">
-        {screen === 'loading' && (
-          <motion.div key="loading" {...fade}>
-            <LoadingScreen onComplete={handleLoadingDone} />
-          </motion.div>
-        )}
+      {screen === 'loading' ? (
+        <LoadingScreen onComplete={handleLoadingDone} slow={isFirstVisit} />
+      ) : null}
+
+      <AnimatePresence initial={false}>
         {screen === 'invite' && (
           <motion.div key="invite" {...fade}>
             <InviteScreen
