@@ -10,7 +10,9 @@
 
 **Tech Stack:** TypeScript, React 18, Vite 6, Netlify Functions (Node 20), AWS DynamoDB, `@aws-sdk/client-dynamodb` + `@aws-sdk/lib-dynamodb`, `uuid`, `vitest` (new) for unit tests, existing `framer-motion` + `tailwindcss` for UI.
 
-**Testing philosophy for this project:** TDD for pure modules with real logic worth testing (identity helpers, name normalization, backend validation). For React screens with canvas + framer-motion, unit-testing adds more ceremony than value — rely on `tsc -b` + manual browser verification via the preview tool. Each chunk ends with `npm run typecheck && npm run build` passing.
+**Testing philosophy for this project:** TDD for pure modules with real logic worth testing (identity helpers, name normalization, backend validation). For React screens with canvas + framer-motion, unit-testing adds more ceremony than value — rely on `tsc -b` + manual browser verification via the preview tool.
+
+**Build/typecheck expectations mid-plan:** Task 1.3 intentionally introduces a typecheck failure in `App.tsx` (references to soon-to-be-deleted screens). This break is fully healed in Task 7.2. Between Chunks 1 and 7, `npm run typecheck` and `npm run build` will fail in a known, scoped way — the errors will only mention `'won'`, `'card'`, `WonScreen`, `CardScreen`. Any *other* typecheck error surfaced during this window is a real bug in the new code and should be fixed before moving on. `npm test` (unit tests only) should stay green throughout.
 
 **Chunks:**
 1. Foundations — dependencies, vitest, shared types, identity helpers
@@ -91,6 +93,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: false,
     include: ['src/**/*.test.ts', 'netlify/functions/**/*.test.ts'],
+    passWithNoTests: true,
   },
 });
 ```
@@ -98,7 +101,7 @@ export default defineConfig({
 - [ ] **Step 2: Sanity-check vitest runs**
 
 Run: `npm test`
-Expected: PASS with "No test files found" (zero tests, non-zero exit? — if vitest exits non-zero on empty, fix by adding `passWithNoTests: true` in the config).
+Expected: PASS with "No test files found" and exit code 0 (the `passWithNoTests` flag guarantees this).
 
 - [ ] **Step 3: Commit**
 
@@ -942,30 +945,21 @@ interface Options {
 interface Result {
   entries: LeaderboardEntry[];
   loading: boolean;
-  error: boolean;
   refetch: () => Promise<void>;
 }
 
 export function useLeaderboard(opts: Options = {}): Result {
   const [entries, setEntries] = useState<LeaderboardEntry[]>(opts.initialEntries ?? []);
   const [loading, setLoading] = useState(!opts.skipInitialFetch);
-  const [error, setError] = useState(false);
   const aborted = useRef(false);
 
   const refetch = useCallback(async () => {
     setLoading(true);
-    setError(false);
     const rows = await fetchLeaderboard();
     if (aborted.current) return;
-    if (rows.length === 0 && !opts.initialEntries) {
-      // `fetchLeaderboard` already swallows errors to `[]`; treat empty on the very first
-      // load as "no error, no data yet" — but only downgrade to error if we truly got nothing.
-      // In practice the UI can render "No scores yet — be the first!"; the `error` flag stays
-      // reserved for actual fetch failures when we can distinguish them later.
-    }
     setEntries(rows);
     setLoading(false);
-  }, [opts.initialEntries]);
+  }, []);
 
   useEffect(() => {
     aborted.current = false;
@@ -976,9 +970,11 @@ export function useLeaderboard(opts: Options = {}): Result {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { entries, loading, error, refetch };
+  return { entries, loading, refetch };
 }
 ```
+
+`fetchLeaderboard` swallows errors to `[]` by design, so the hook does not expose a separate error state. The UI distinguishes "loading" from "empty" via the `loading` flag + `entries.length`.
 
 - [ ] **Step 2: Typecheck (partial — App.tsx still broken)**
 
@@ -1553,15 +1549,13 @@ with:
 
 ```ts
 if (hitFloor || hitCeiling || hitPipe) {
-  if (s.phase === 'playing') {
-    s.phase = 'gameover';
-    sound.play('death');
-    onGameEnd(s.score);
-  }
+  s.phase = 'gameover';
+  sound.play('death');
+  onGameEnd(s.score);
 }
 ```
 
-The `onGameEnd` call is wrapped in the `playing → gameover` transition so it only fires once per death.
+This whole block is already nested inside `if (s.phase === 'playing')` (see the outer `if` at line ~116), so `onGameEnd` fires exactly once per death. No additional guard needed.
 
 - [ ] **Step 6: Collapse the gameover overlay branches**
 
@@ -1989,9 +1983,9 @@ inside gameOver the first qualifying run."
 
 - [ ] **Step 1: Verify nothing still imports these**
 
-Run (each should return zero results):
+Run (expected: zero matches):
 ```bash
-npx grep -rn "CardScreen\|WonScreen\|TradingCard\|StaticInvite\|downloadCard\|downloadElement" src
+grep -rn "CardScreen\|WonScreen\|TradingCard\|StaticInvite\|downloadCard\|downloadElement" src
 ```
 If any match is found, trace and fix before deleting.
 
@@ -2030,12 +2024,22 @@ html2canvas and its only consumer are gone."
 
 Final integration check. This is the chunk that proves the feature actually works. No code changes (unless verification uncovers a bug).
 
-### Task 8.1: Unit test suite
+### Task 8.1: Unit test suite + function typecheck
 
 - [ ] **Step 1: Run all tests**
 
 Run: `npm test`
 Expected: all tests pass (identity, submit-score.validate, leaderboardApi).
+
+- [ ] **Step 2: Spot-check `netlify/functions` typechecks**
+
+`npm run typecheck` (via `tsc -b`) only traverses `tsconfig.app.json` / `tsconfig.node.json`, which do not currently include `netlify/functions/`. Netlify itself transpiles the functions at deploy time, so a hidden type error would only surface on deploy. Guard against that by running a standalone check:
+
+```bash
+npx tsc --noEmit --module esnext --moduleResolution bundler --target es2022 --strict netlify/functions/*.ts
+```
+
+Expected: no errors. If any surface, fix them before deploying.
 
 ### Task 8.2: Local preview with mocked fetches
 
