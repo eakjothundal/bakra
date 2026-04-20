@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TradingCard } from '../components/TradingCard';
-import { downloadElement } from '../lib/downloadCard';
+import { saveElementAsImage } from '../lib/saveImage';
+import { SaveImageModal } from '../components/SaveImageModal';
 import type { UseSound } from '../hooks/useSound';
 
 interface Props {
@@ -13,6 +14,7 @@ type ToastState = null | { msg: string; tone: 'info' | 'success' | 'error' };
 export function CardScreen({ onBack, sound }: Props) {
   const [toast, setToast] = useState<ToastState>(null);
   const [busy, setBusy] = useState<'card' | 'invite' | null>(null);
+  const [longPress, setLongPress] = useState<{ url: string; filename: string } | null>(null);
 
   const showToast = (msg: string, tone: 'info' | 'success' | 'error' = 'info') => {
     setToast({ msg, tone });
@@ -25,12 +27,16 @@ export function CardScreen({ onBack, sound }: Props) {
     setBusy('card');
     showToast('generating card…', 'info');
     try {
-      await downloadElement(
-        'trading-card-download',
-        'eakjot-bakra-party-rookie-card.png',
-        { background: '#1a1410', scale: 3 },
-      );
-      showToast('card saved!', 'success');
+      const filename = 'eakjot-bakra-party-rookie-card.png';
+      const outcome = await saveElementAsImage('trading-card-download', filename, {
+        background: '#1a1410',
+        scale: 3,
+        shareTitle: 'My Bakra Party Rookie Card',
+        shareText: 'Got goated at the Bakra Party. eakjot.dev/bakra',
+        onLongPressFallback: (url) => setLongPress({ url, filename }),
+      });
+      if (outcome === 'downloaded') showToast('card saved!', 'success');
+      else if (outcome === 'shared') showToast('shared!', 'success');
     } catch {
       showToast('download failed', 'error');
     } finally {
@@ -44,11 +50,16 @@ export function CardScreen({ onBack, sound }: Props) {
     setBusy('invite');
     showToast('generating invite…', 'info');
     try {
-      await downloadElement('static-invite', 'bakra-party-invite.png', {
-        background: '#F4E8D0',
+      const filename = 'bakra-party-invite.png';
+      const outcome = await saveElementAsImage('static-invite', filename, {
+        background: '#1a1410',
         scale: 2,
+        shareTitle: 'Bakra Party 2026',
+        shareText: 'Bakra Party 2026 — Tue May 19 · 6 PM · Lincoln CA',
+        onLongPressFallback: (url) => setLongPress({ url, filename }),
       });
-      showToast('invite saved!', 'success');
+      if (outcome === 'downloaded') showToast('invite saved!', 'success');
+      else if (outcome === 'shared') showToast('shared!', 'success');
     } catch {
       showToast('download failed', 'error');
     } finally {
@@ -111,7 +122,7 @@ export function CardScreen({ onBack, sound }: Props) {
           role="status"
           aria-live="polite"
           className={[
-            'fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-3 rounded-xl text-[13px] font-medium shadow-lg',
+            'fixed left-1/2 -translate-x-1/2 bottom-6 px-4 py-3 rounded-xl text-[13px] font-medium shadow-lg z-40',
             toast.tone === 'success'
               ? 'bg-brass text-bg'
               : toast.tone === 'error'
@@ -121,6 +132,17 @@ export function CardScreen({ onBack, sound }: Props) {
         >
           {toast.msg}
         </div>
+      )}
+
+      {longPress && (
+        <SaveImageModal
+          src={longPress.url}
+          filename={longPress.filename}
+          onClose={() => {
+            URL.revokeObjectURL(longPress.url);
+            setLongPress(null);
+          }}
+        />
       )}
     </div>
   );
